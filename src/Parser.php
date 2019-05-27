@@ -70,7 +70,7 @@ class Parser
             }
 
             if ($autoIncrement) {
-                $table->setAutoIncrement((int) $autoIncrement);
+                $table->setAutoIncrement((int)$autoIncrement);
             }
 
             if ($defaultCharset) {
@@ -273,7 +273,7 @@ class Parser
 
                 $indexFirstCharacters = null;
                 if (isset($definitionMatch['firstCharacters']) && !empty($definitionMatch['firstCharacters'])) {
-                    $indexFirstCharacters = (int) $definitionMatch['firstCharacters'];
+                    $indexFirstCharacters = (int)$definitionMatch['firstCharacters'];
                 }
 
                 $column = $table->getColumnByName(trim($indexColumnName));
@@ -307,28 +307,28 @@ class Parser
     private function getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength, $fractionalSeconds)
     {
         if (!empty($intLength)) {
-            return (int) $intLength;
+            return (int)$intLength;
         }
         if (!empty($decimalLength)) {
-            return (int) $decimalLength;
+            return (int)$decimalLength;
         }
         if (!empty($doubleLength)) {
-            return (int) $doubleLength;
+            return (int)$doubleLength;
         }
         if (!empty($floatLength)) {
-            return (int) $floatLength;
+            return (int)$floatLength;
         }
         if (!empty($charLength)) {
-            return (int) $charLength;
+            return (int)$charLength;
         }
         if (!empty($binaryLength)) {
-            return (int) $binaryLength;
+            return (int)$binaryLength;
         }
         if (!empty($yearLength)) {
-            return (int) $yearLength;
+            return (int)$yearLength;
         }
         if (!empty($fractionalSeconds)) {
-            return (int) $fractionalSeconds;
+            return (int)$fractionalSeconds;
         }
 
         return;
@@ -344,13 +344,13 @@ class Parser
     private function getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision)
     {
         if (!empty($decimalPrecision)) {
-            return (int) $decimalPrecision;
+            return (int)$decimalPrecision;
         }
         if (!empty($doublePrecision)) {
-            return (int) $doublePrecision;
+            return (int)$doublePrecision;
         }
         if (!empty($floatPrecision)) {
-            return (int) $floatPrecision;
+            return (int)$floatPrecision;
         }
 
         return;
@@ -359,15 +359,15 @@ class Parser
     public function convertStringsToBase64($sqlScript)
     {
         $sqlScript = preg_replace_callback('/DEFAULT\s*\'(?<defaultValue>[^\']+)\'/', function ($matches) {
-            return sprintf('DEFAULT \'%s\'', base64_encode($matches['defaultValue']));
+            return sprintf('DEFAULT \'%s\'', $this->convertSlash2Underline(base64_encode($matches['defaultValue'])));
         }, $sqlScript);
 
         $sqlScript = preg_replace_callback('/COMMENT\s*\'(?<comment>[^\']+)\'/', function ($matches) {
-            return sprintf('COMMENT \'%s\'', base64_encode($matches['comment']));
+            return sprintf('COMMENT \'%s\'', $this->convertSlash2Underline(base64_encode($matches['comment'])));
         }, $sqlScript);
 
         $sqlScript = preg_replace_callback('/COMMENT\s*=\s*\'(?<comment>([^\']|\'\')+)\'/', function ($matches) {
-            return sprintf('COMMENT=\'%s\'', base64_encode($matches['comment']));
+            return sprintf('COMMENT=\'%s\'', $this->convertSlash2Underline(base64_encode($matches['comment'])));
         }, $sqlScript);
 
         return $sqlScript;
@@ -376,17 +376,27 @@ class Parser
     public function convertStringsFromBase64($sqlScript)
     {
         $sqlScript = preg_replace_callback('/DEFAULT\s*\'(?<defaultValue>[^\']+)\'/', function ($matches) {
-            return sprintf('DEFAULT \'%s\'', base64_decode($matches['defaultValue']));
+            return sprintf('DEFAULT \'%s\'', $this->convertUnderline2Slash(base64_decode($matches['defaultValue'])));
         }, $sqlScript);
 
         $sqlScript = preg_replace_callback('/COMMENT\s*\'(?<comment>[^\']+)\'/', function ($matches) {
-            return sprintf('COMMENT \'%s\'', base64_decode($matches['comment']));
+            return sprintf('COMMENT \'%s\'', $this->convertUnderline2Slash(base64_decode($matches['comment'])));
         }, $sqlScript);
 
         $sqlScript = preg_replace_callback('/COMMENT\s*=\s*\'(?<comment>([^\']|\'\')+)\'/', function ($matches) {
-            return sprintf('COMMENT=\'%s\'', base64_decode($matches['comment']));
+            return sprintf('COMMENT=\'%s\'', $this->convertUnderline2Slash(base64_decode($matches['comment'])));
         }, $sqlScript);
 
         return $sqlScript;
+    }
+
+    protected function convertSlash2Underline($string)
+    {
+        return strtr($string, '+/', '-_');
+    }
+
+    protected function convertUnderline2Slash($string)
+    {
+        return strtr($string, '-_', '+/');
     }
 }
