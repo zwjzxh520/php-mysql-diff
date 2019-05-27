@@ -392,11 +392,11 @@ class Parser
 
     protected function convertSlash2Underline($string)
     {
-        return strtr($string, '+/', '-_');
+        return strtr($string, '/', '_');
     }
 
     protected function convertUnderline2Slash($string)
     {
-        return strtr($string, '-_', '+/');
+        return strtr($string, '_', '/');
     }
 }
