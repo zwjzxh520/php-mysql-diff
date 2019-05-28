@@ -376,15 +376,15 @@ class Parser
     public function convertStringsFromBase64($sqlScript)
     {
         $sqlScript = preg_replace_callback('/DEFAULT\s*\'(?<defaultValue>[^\']+)\'/', function ($matches) {
-            return sprintf('DEFAULT \'%s\'', $this->convertUnderline2Slash(base64_decode($matches['defaultValue'])));
+            return sprintf('DEFAULT \'%s\'', base64_decode($this->convertUnderline2Slash($matches['defaultValue'])));
         }, $sqlScript);
 
         $sqlScript = preg_replace_callback('/COMMENT\s*\'(?<comment>[^\']+)\'/', function ($matches) {
-            return sprintf('COMMENT \'%s\'', $this->convertUnderline2Slash(base64_decode($matches['comment'])));
+            return sprintf('COMMENT \'%s\'', base64_decode($this->convertUnderline2Slash($matches['comment'])));
         }, $sqlScript);
 
         $sqlScript = preg_replace_callback('/COMMENT\s*=\s*\'(?<comment>([^\']|\'\')+)\'/', function ($matches) {
-            return sprintf('COMMENT=\'%s\'', $this->convertUnderline2Slash(base64_decode($matches['comment'])));
+            return sprintf('COMMENT=\'%s\'', base64_decode($this->convertUnderline2Slash($matches['comment'])));
         }, $sqlScript);
 
         return $sqlScript;
